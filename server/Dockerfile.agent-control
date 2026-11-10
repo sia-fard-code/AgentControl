@@ -1,0 +1,26 @@
+FROM python:3.12-slim
+
+ENV PYTHONDONTWRITEBYTECODE=1 \
+    PYTHONUNBUFFERED=1
+
+WORKDIR /app
+COPY pyproject.toml ./
+COPY src/agent_control/*.py ./src/agent_control/
+COPY src/harness_process_identity.py ./src/
+
+RUN python -m pip install --no-cache-dir . \
+    && groupadd --gid 10001 agent-control \
+    && useradd --no-log-init --uid 10001 --gid 10001 \
+        --home-dir /nonexistent --shell /usr/sbin/nologin agent-control \
+    && mkdir -p /var/lib/agent-control /sources \
+    && chown 10001:10001 /var/lib/agent-control \
+    && chmod 0700 /var/lib/agent-control
+
+COPY web/ ./web/
+COPY config/pricing.json ./config/pricing.json
+
+USER 10001:10001
+
+# The absent index keeps host runs out of the container's isolated PID namespace.
+ENTRYPOINT ["agent-control", "--state-dir", "/var/lib/agent-control", "--machine-index", "/sources/agent-runs-index.jsonl", "--pricing", "/app/config/pricing.json", "--web-dir", "/app/web"]
+CMD ["serve", "--port", "8787"]

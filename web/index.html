@@ -1,0 +1,146 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="agent-control-csrf" content="__AGENT_CONTROL_CSRF__" />
+    <title>AgentControl</title>
+    <link rel="stylesheet" href="/static/dashboard.css" />
+    <link rel="stylesheet" href="/static/panel.css" />
+  </head>
+  <body>
+    <main>
+      <h1>AgentControl</h1>
+      <div class="sub" id="state">Loading snapshot&hellip;</div>
+      <div id="cost-disabled-note" class="cost-disabled-note" role="note">
+        Cost estimation: disabled (experimental, not activated in this build). Token counts are shown instead.
+      </div>
+
+      <section id="attention" class="attention" hidden aria-live="polite"></section>
+
+      <div class="top">
+        <div class="live-title">
+          <h2>Live now</h2>
+          <div id="live-summary" class="live-summary"></div>
+        </div>
+        <button
+          id="spend-summary"
+          class="spend-summary"
+          type="button"
+          aria-label="View machine spend breakdown"
+          aria-haspopup="dialog"
+        >
+          <span class="spend-kicker">Machine spend (approved projects)</span>
+          <span class="spend-main">
+            <strong id="spend-all" class="spend-total">&mdash;</strong>
+            <span class="spend-link">View breakdown &rarr;</span>
+          </span>
+          <span class="spend-periods">
+            <span class="spend-period"><span>Today</span><b id="spend-today">&mdash;</b></span>
+            <span class="spend-period"><span>This month</span><b id="spend-month">&mdash;</b></span>
+          </span>
+          <span id="spend-confidence" class="spend-confidence">Calculating coverage&hellip;</span>
+        </button>
+      </div>
+      <div id="live-status" class="live-status" role="status" aria-live="polite" hidden></div>
+      <div class="scroll"><table id="live"></table></div>
+      <div class="scroll"><table id="live-tools" class="tool-sessions" hidden></table></div>
+
+      <section id="recent" class="recent" hidden><h3>Recently ended <span class="sub">(last 15 min)</span></h3><div class="scroll"><table id="recent-table"></table></div><div class="scroll"><table id="recent-tools" class="tool-sessions" hidden></table></div></section>
+
+      <div class="top">
+        <h2>Run history</h2>
+      </div>
+      <div class="filters">
+        <label>Project <select id="project"><option value="">All</option></select></label>
+        <label>Model <select id="model"><option value="">All</option></select></label>
+        <label>State <select id="status"><option value="">All</option></select></label>
+        <label>Task <select id="task"><option value="">All</option></select></label>
+        <label>Tool <select id="tool"><option value="">All</option></select></label>
+        <label class="check"><input id="include-excluded" type="checkbox" /> Show pending/excluded</label>
+      </div>
+      <div class="scroll"><table id="history"></table></div>
+
+      <h2>Projects</h2>
+      <p class="sub">
+        Pending projects are visible for diagnosis but excluded from totals until approved.
+      </p>
+      <div class="scroll"><table id="projects"></table></div>
+
+      <h2>Diagnostics</h2>
+      <div class="scroll"><table id="diagnostics"></table></div>
+
+      <div id="usage-legend" class="sub">
+        Legend:
+        <span title="not reported by the gateway">&mdash;</span> not reported;
+        <span title="sum of known rows; some rows did not report this counter">&ge;</span>
+        known-only sum, some rows unknown;
+        <span class="cost-only"><span title="cache usage unknown; billed at the full input rate">&le;</span>
+        upper-bound cost estimate.</span>
+      </div>
+
+      <div id="spend-backdrop" class="drawer-backdrop" hidden></div>
+      <aside
+        id="spend-drawer"
+        class="spend-drawer"
+        role="dialog"
+        aria-modal="true"
+        aria-hidden="true"
+        aria-labelledby="spend-drawer-title"
+      >
+        <div class="drawer-head">
+          <div class="drawer-title">
+            <div>
+              <div class="spend-kicker">Machine-wide</div>
+              <h2 id="spend-drawer-title">Cost breakdown</h2>
+            </div>
+            <button id="spend-close" class="icon-button" type="button" aria-label="Close spend breakdown">&times;</button>
+          </div>
+          <div id="drawer-all" class="drawer-total">&mdash;</div>
+          <div class="drawer-periods">
+            <span>Today<b id="drawer-today">&mdash;</b></span>
+            <span>This month<b id="drawer-month">&mdash;</b></span>
+            <span>All time<b id="drawer-runs">&mdash;</b></span>
+          </div>
+          <h3>By tool</h3>
+          <div class="scroll"><table id="by-tool-totals" class="by-tool-totals"></table></div>
+        </div>
+        <div id="spend-tabs" class="spend-tabs" role="tablist" aria-label="Spend breakdown">
+          <button type="button" role="tab" data-spend-tab="day">By day</button>
+          <button type="button" role="tab" data-spend-tab="project">By project</button>
+          <button type="button" role="tab" data-spend-tab="model">By model</button>
+          <button type="button" role="tab" data-spend-tab="task">By task</button>
+          <button type="button" role="tab" data-spend-tab="tool">By tool</button>
+        </div>
+        <div class="drawer-body">
+          <div id="spend" role="tabpanel"></div>
+          <details id="rates-panel">
+            <summary>Rates used</summary>
+            <p>All rates are USD per 1M tokens. Versions are immutable and selected by run start time.</p>
+            <div id="rate-list"></div>
+            <form id="rate-editor" hidden>
+              <strong id="rate-editor-title">Adjust rates</strong>
+              <label>Input<input id="rate-input" type="number" min="0" step="any" required /></label>
+              <label>Cached input<input id="rate-cache_read" type="number" min="0" step="any" required /></label>
+              <label>Cache write<input id="rate-cache_write" type="number" min="0" step="any" required /></label>
+              <label>Output<input id="rate-output" type="number" min="0" step="any" required /></label>
+              <label><input id="rate-now" type="radio" name="rate-effective" value="now" checked /> Effective now</label>
+              <label><input id="rate-custom" type="radio" name="rate-effective" value="custom" /> Custom date &amp; time</label>
+              <input id="rate-datetime" type="datetime-local" disabled />
+              <label>Optional note<textarea id="rate-note" maxlength="500"></textarea></label>
+              <button id="pricing-preview" type="submit">Continue to preview</button>
+              <button id="pricing-append" type="button" disabled>Append rate version</button>
+              <button id="rate-cancel" type="button">Cancel</button>
+              <div id="rate-result" aria-live="polite" hidden></div>
+            </form>
+            <details>
+              <summary>Rate history</summary>
+              <div id="rate-history"></div>
+            </details>
+          </details>
+        </div>
+      </aside>
+    </main>
+    <script type="module" src="/static/dashboard.js"></script>
+  </body>
+</html>

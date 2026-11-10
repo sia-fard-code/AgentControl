@@ -1,0 +1,1 @@
+{"dispatch_id":"d1","label":"sample","model":"sample-model","effort":null,"pid":4321,"started_at":"2026-09-16T12:00:00+00:00","transcript_glob":".claude/agent-runs/20260916-120000-sample*","argv":["delegate","--label","sample"]}

@@ -1,0 +1,34 @@
+.pytest_cache/
+__pycache__/
+*.py[cod]
+.coverage
+htmlcov/
+build/
+dist/
+*.egg-info/
+.venv/
+scratch/
+
+# Runtime accounting state must never be committed (belongs in the machine
+# state dir, e.g. C:\Users\operator\.claude\agent-control). Ignore it defensively
+# in case a state dir is ever pointed inside the checkout.
+ledger.jsonl
+projects.jsonl
+sync_state.json
+pricing_history.jsonl
+activity/
+migration_reports/
+migration-report.json
+# Delegated agent harness. Transcripts, message journals and anomaly logs are
+# per-run scratch; worktrees are disposable checkouts. .claude/agent-policy.json
+# and .claude/settings.json ARE tracked -- the security boundary belongs in git.
+.claude/agent-runs/
+.claude/worktrees/
+.claude/settings.local.json
+*.patch
+
+# Private deployment snapshots, environment, and certificate material.
+/server/docker-compose-server
+/server/nginx-config
+/server/nginx/
+/server/.env

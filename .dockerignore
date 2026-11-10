@@ -1,0 +1,21 @@
+# Deny by default, including credentials, server snapshots, and runtime state.
+**
+!pyproject.toml
+!src/
+src/**
+!src/harness_process_identity.py
+!src/agent_control/
+src/agent_control/**
+!src/agent_control/*.py
+!web/
+web/**
+!web/index.html
+!web/package.json
+!web/*.js
+!web/*.css
+!config/
+config/**
+!config/pricing.json
+!server/
+server/**
+!server/Dockerfile.agent-control

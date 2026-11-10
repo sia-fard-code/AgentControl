@@ -1,0 +1,28 @@
+{
+  "allowed_commands": [],
+  "servers": {
+    "research_browser": {
+      "command": [
+        "<ABSOLUTE-PATH-TO>/node.exe",
+        "<ABSOLUTE-PATH-TO>/@playwright/mcp@0.0.83/cli.js",
+        "--headless",
+        "--isolated",
+        "--sandbox",
+        "--block-service-workers",
+        "--no-webmcp",
+        "--codegen", "none",
+        "--image-responses", "omit",
+        "--timeout-action", "5000",
+        "--timeout-navigation", "15000",
+        "--timeout-settle", "1000"
+      ],
+      "env": {},
+      "timeout_s": 60,
+      "allowed_tools": [
+        "browser_navigate", "browser_navigate_back", "browser_close"
+      ],
+      "mutating_tools": ["browser_navigate", "browser_navigate_back", "browser_close"],
+      "enabled": false
+    }
+  }
+}

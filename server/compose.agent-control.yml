@@ -1,0 +1,40 @@
+# Standalone Ubuntu/Linux localhost dashboard. For authenticated HTTPS, use the nginx overlay.
+# No host agent data is mounted; this starts with an empty dashboard.
+# The public multi-platform image is digest-pinned; no server-side build is needed.
+name: agent-control
+
+services:
+  agent-control:
+    image: docker.io/example/agent-control:0.2.0@sha256:7326f24bb74926c319988ba504c3c31b5a628201d59d4d65b71a2be00f0bac1b
+    restart: unless-stopped
+    init: true
+    # The app binds only 127.0.0.1. Linux host networking preserves loopback access.
+    # Do not add published ports, host PID sharing, or host run/index mounts.
+    network_mode: host
+    read_only: true
+    cap_drop:
+      - ALL
+    security_opt:
+      - no-new-privileges:true
+    volumes:
+      - agent-control-data:/var/lib/agent-control
+    tmpfs:
+      - /tmp:size=16m,mode=1777
+    healthcheck:
+      test:
+        - CMD
+        - python
+        - -c
+        - "from urllib.request import urlopen; urlopen('http://127.0.0.1:8787/', timeout=3).close()"
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+volumes:
+  agent-control-data:

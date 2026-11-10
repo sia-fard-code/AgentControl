@@ -1,0 +1,2 @@
+{"iter":1,"phase":"loop","model":"sample-model","ts":"2026-09-16T12:01:00+00:00","sent":20,"recv":5,"cache_read":4,"cache_write":0,"raw":{"input_tokens":20,"output_tokens":5,"cache_read_input_tokens":4,"cache_creation_input_tokens":0}}
+{"iter":2,"phase":"wrapup","model":"sample-model","ts":"2026-09-16T12:02:00+00:00","sent":10,"recv":2,"cache_read":null,"cache_write":null,"raw":{"input_tokens":10,"output_tokens":2,"cache_read_input_tokens":null,"cache_creation_input_tokens":null}}

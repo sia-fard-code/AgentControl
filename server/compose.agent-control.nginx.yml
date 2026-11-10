@@ -1,0 +1,45 @@
+# Merge with the existing server stack, not the standalone localhost stack:
+# Co-locate both AgentControl Compose files with the existing stack's base file.
+# Retain its project name and directory; see docs/operator-guide.md for commands.
+# ./nginx-config is the private full config, merged using nginx.agent-control.conf.
+# Provision the TLS certificate and external password file before restarting nginx.
+x-public-origin: &public-origin https://agent-control.example.com
+
+services:
+  nginx:
+    volumes:
+      - type: bind
+        source: ./nginx-config
+        target: /etc/nginx/nginx.conf
+        read_only: true
+        bind:
+          create_host_path: false
+      - type: bind
+        source: ${AGENT_CONTROL_HTPASSWD_FILE:-/etc/agent-control/htpasswd}
+        target: /etc/nginx/agent-control.htpasswd
+        read_only: true
+        bind:
+          create_host_path: false
+
+  agent-control:
+    extends:
+      file: compose.agent-control.yml
+      service: agent-control
+    # No backend port is published: only nginx can reach its shared loopback.
+    network_mode: service:nginx
+    depends_on:
+      nginx:
+        condition: service_started
+        restart: true
+    environment:
+      AGENT_CONTROL_PUBLIC_ORIGIN: *public-origin
+    command: ["--public-origin", *public-origin, "serve", "--port", "8787"]
+    healthcheck:
+      test:
+        - CMD
+        - python
+        - -c
+        - "import os; from urllib.parse import urlsplit; from urllib.request import Request, urlopen; request = Request('http://127.0.0.1:8787/', headers={'Host': urlsplit(os.environ['AGENT_CONTROL_PUBLIC_ORIGIN']).netloc}); urlopen(request, timeout=3).close()"
+
+volumes:
+  agent-control-data:

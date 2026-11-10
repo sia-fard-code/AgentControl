@@ -1,0 +1,14 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(python $HOME/.claude/bin/ask-model.py:*)",
+      "Bash(python $HOME/.claude/bin/delegate.py:*)",
+      "Bash(python $HOME/.claude/bin/fanout.py:*)",
+      "Bash(python tools/agent-harness/selftest_policy.py:*)",
+      "Bash(git status:*)",
+      "Bash(git diff:*)",
+      "Bash(git log:*)",
+      "Bash(git ls-files:*)"
+    ]
+  }
+}

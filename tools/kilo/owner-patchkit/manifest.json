@@ -1,0 +1,17 @@
+{
+  "schema": 1,
+  "patch_id": "sha256:28d0f872d419f9f8ebccb60d50c9f8c95151fbc05a01be51d4181ad78fcad2d7",
+  "runtime_version": "7.8.18",
+  "upstream_commit": "b81761530650f8ec7b071441f4f54d2514f1a244",
+  "files": {
+    "packages/opencode/src/kilocode/background-process/index.ts": "53541f239e68b3ebd9bf9dc2c4b025ecf3d22fc2",
+    "packages/opencode/src/kilocode/background-process/runner.ts": "e078349879342b3be9347904eba5537606c50783",
+    "packages/opencode/src/kilocode/background-process/windows.ts": "6a4786fb176f5b24824fc5cea3d60ee10b139d6f",
+    "packages/opencode/src/kilocode/server/httpapi/handlers/background-process.ts": "5c4ab90e2f184045b2f140e9fd361cb3ad076d34",
+    "packages/opencode/src/kilocode/server/httpapi/handlers/sandbox.ts": "f70f61d19d230240421c3fad70fd91e558e3b750",
+    "packages/opencode/src/kilocode/tool/task-background-process.ts": "0fac7fae85fa3e0888b2a98d086341870955b4ef",
+    "packages/opencode/src/session/session.ts": "842b1c8bfc7656ec9265334a38b8d54c473c6cea"
+  },
+  "coverage": ["explicit_stop", "explicit_restart", "session_stop", "session_removed", "task_finished", "api_session_stop", "sandbox_enabled", "instance_dispose", "runtime_shutdown", "launch_rollback", "actual_child_exit"],
+  "unsupported": ["autonomous_runner_job_cleanup", "unrecorded_os_killer", "power_loss", "ui_gesture_attribution", "adopted_process_native_birth"]
+}
